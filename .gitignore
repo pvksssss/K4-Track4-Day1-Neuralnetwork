@@ -1,21 +1,31 @@
+# Bỏ qua cache và file sinh ra tạm khi chạy thử.
+# KHÔNG bỏ qua submission_<MSSV>/ — đó là bài nộp, phải nằm trong repo để giảng viên xem.
+
 __pycache__/
 .ipynb_checkpoints/
 *.pyc
 .DS_Store
-sk_data/
+
+# Dữ liệu đã tách sẵn, sinh ra bằng `python scripts/split_data.py` (~400 MB).
+# Nguồn gốc data/covtype.csv.gz và data/split_metadata.csv vẫn được commit.
 data/processed/
+
+# File trọng số mô hình — README 6.3 không nộp.
 *.pt
 *.pth
 *.ckpt
 
-# sản phẩm chạy/nộp (được tạo ra lại mỗi lần chạy; KHÔNG commit — nộp bằng file zip)
-submission*/
-_nbtest*/
-figures/
-results/
-experiments.xlsx
-predictions_eval*.csv
-eval_result*.json
+# Kết quả chạy thử ở gốc repo (khi chạy notebook từ <repo>/code/ mà chưa dùng thư mục nộp).
+# Các mẫu có dấu "/" đầu để chỉ áp dụng ở gốc, không áp dụng cho submission_<MSSV>/.
+/submission/
+/figures/
+/results/
+/experiments.xlsx
+/predictions_eval*.csv
+/eval_result*.json
+
+# Notebook và file chạy thử.
+/_nbtest*/
 _lab_fast_out.ipynb
 repo.zip
 *.zip
