@@ -7,39 +7,53 @@ nên nếu bị ngắt kết nối thì chạy lại sẽ **bỏ qua** thí nghi
 
 ## 1. Chuẩn bị (một lần)
 
-### 1a. Đưa repo lên Kaggle
+> **Không cần clone thủ công.** Ô setup đầu tiên của `lab.ipynb` tự chạy
+> `git clone --depth 1` vào `/kaggle/working/repo` nếu chưa thấy repo.
+> Bắt buộc bật **Internet: On**, và **phải** bật vì lý do ở mục 1c.
 
-**Cách A — Kaggle Dataset (không cần Internet, khuyến nghị)**
+### 1a. Nếu không bật được Internet
 
-1. Trên máy: `git clone` / copy thư mục repo, nén thành `repo.zip`.
-   Lưu ý: `data/processed/` và `__pycache__/` không cần đưa lên (đã có trong `.gitignore`).
+1. Nén repo thành `repo.zip` (chỉ ~18 MB vì không kèm `data/processed/`).
 2. Kaggle → **Datasets** → **New Dataset** → upload `repo.zip` → tạo.
-3. Notebook dùng lệnh:
+3. Sửa hai dòng đầu ô setup của `lab.ipynb`:
 
 ```python
-!cp -r "/kaggle/input/<tên-dataset>/repo" /kaggle/working/repo
-REPO_ROOT = "/kaggle/working/repo"
+REPO_URL = None                      # không cần clone
+REPO_LOCAL = "/kaggle/working/repo"
 ```
 
-**Cách B — git clone (cần bật Internet)**
-
-Settings → Internet → On, rồi:
+rồi thêm ngay dưới đó, trước khi `REPO_ROOT = find_repo_root()`:
 
 ```python
-!git clone https://github.com/pvksssss/K4-Track4-Day1-Neuralnetwork.git /kaggle/working/repo
-REPO_ROOT = "/kaggle/working/repo"
+import shutil; shutil.rmtree(REPO_LOCAL, ignore_errors=True)
+shutil.copytree("/kaggle/input/<tên-dataset>", REPO_LOCAL)
 ```
 
-### 1b. Đưa `code/lab.ipynb` lên Kaggle
+### 1b. ⚠️ Vì sao clone phải nằm trong notebook
 
-Tạo notebook mới trong Kaggle, xoá các ô mặc định, rồi **kéo thả `code/lab.ipynb`** vào
-(hoặc dán nội dung các ô vào). Notebook phải nằm ở `/kaggle/working/` — **không** đặt trong
-`/kaggle/working/repo/code/`, nếu không `code/` sẽ bị ghi đè lúc `!cp`/`!git clone`.
+**"Save Version → Save & Run All" của Kaggle chạy ở session MỚI.** Mọi file bạn clone trong
+session tương tác (bấm "Run All" lúc nhập liệu) **sẽ biến mất** khi bấm Save Version, và ô setup
+sẽ báo:
 
-Nếu đặt nhầm trong `repo/code/` thì sửa dòng này ở ô setup cho khớp:
+```
+AssertionError: không tìm thấy thư mục gốc repo
+```
+
+Đây không phải lỗi cấu hình — đó là hành vi bình thường của Kaggle. Notebook đã xử lý sẵn bằng
+cách tự clone trong chính nó.
+
+### 1c. Đưa `code/lab.ipynb` lên Kaggle
+
+Tạo notebook mới trong Kaggle rồi **kéo thả `code/lab.ipynb`** vào (hoặc dán nội dung các ô vào).
+
+Đặt notebook ở `/kaggle/working/`. **Không** đặt trong `/kaggle/working/repo/code/`, vì ô setup sẽ
+clone repo và ghi đè thư mục đó.
+
+Các module `.py` không cần chép ra `/kaggle/working`: ô setup tự thêm
+`/kaggle/working/repo/code` vào `sys.path`. Nếu bạn muốn chép ra thì chạy sau khi clone:
 
 ```python
-CWD = "/kaggle/working"          # nơi chứa lab.ipynb
+!cp /kaggle/working/repo/code/*.py /kaggle/working/
 ```
 
 ---
@@ -176,8 +190,11 @@ Trên Windows, đặt `OPENBLAS_NUM_THREADS=1` nếu gặp
 
 | Triệu chứng | Cách xử lý |
 |---|---|
-| `assert REPO_ROOT` fail ở ô setup | Chưa clone/copy repo. Chạy lệnh ở mục 1 rồi **chạy lại ô setup**. |
-| Kết quả ghi nhầm chỗ | Ô setup in ra `REPO_ROOT` / `OUT_DIR` / `notebook` ngay đầu tiên — kiểm tra 3 dòng đó. Ép lại bằng biến môi trường `LAB_OUT_DIR=/kaggle/working` hoặc sửa trực tiếp dòng `OUT_DIR = ...`. |
+| `AssertionError: không tìm thấy thư mục gốc repo` | **Internet: Off**, hoặc `REPO_URL` sai. Bật Internet rồi chạy lại — xem mục 1c. |
+| `FileNotFoundError: git` | Kaggle không có `git` trong PATH → dùng Cách Dataset (mục 1a). |
+| GitHub chặn IP của Kaggle | Bật Internet rồi thử lại; nếu vẫn lỗi thì dùng Cách Dataset. |
+| `NotFoundError: openpyxl` | `!pip install -q openpyxl` |
+| Kết quả ghi nhầm chỗ | Ô setup in ra `REPO_ROOT` / `CODE_DIR` / `OUT_DIR` ngay đầu tiên — kiểm tra 3 dòng đó. Ép lại bằng `LAB_OUT_DIR`. |
 | `NotFoundError: openpyxl` | `!pip install -q openpyxl` |
 | `CUDA out of memory` | Đây là lỗi **GPU**, không phải RAM. Dữ liệu cả tập chỉ ~130 MB nên rất khó xảy ra; nếu gặp thì thường do bật cả 2 GPU — chọn 1 GPU. |
 | Notebook bị ngắt giữa chừng | Commit & Run lại: `SKIP_DONE = True` sẽ bỏ qua các thí nghiệm đã có `results/<exp_id>.json`. |
