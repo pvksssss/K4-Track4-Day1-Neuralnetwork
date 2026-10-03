@@ -7,3 +7,15 @@ data/processed/
 *.pt
 *.pth
 *.ckpt
+
+# sản phẩm chạy/nộp (được tạo ra lại mỗi lần chạy; KHÔNG commit — nộp bằng file zip)
+submission*/
+_nbtest*/
+figures/
+results/
+experiments.xlsx
+predictions_eval*.csv
+eval_result*.json
+_lab_fast_out.ipynb
+repo.zip
+*.zip

@@ -1,0 +1,15 @@
+# Thư viện dùng cho lab Day 1.
+# Trên Kaggle/Colab đã có sẵn hầu hết; chỉ cần cài thêm nếu thiếu:
+#   pip install -r requirements.txt
+#
+# Lưu ý KHÔNG cài torch bằng pip trên Kaggle — Kaggle đã chọn sẵn bản CUDA khớp GPU.
+
+torch>=2.0            # 2.x, cần cho torch.autocast + torch.amp.GradScaler
+numpy>=1.24
+pandas>=2.0
+scikit-learn>=1.2     # train_test_split(stratify=...)
+matplotlib>=3.7
+openpyxl>=3.1         # điền experiments.xlsx từ templates/experiment_table_template.xlsx
+
+# Không dùng: torchvision, timm, sklearn.neural_network.MLPClassifier
+# (README mục 5 cấm dùng mô hình dựng sẵn / pretrained).
